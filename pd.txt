@@ -1,26 +1,27 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+
 int teste = 0;
+
 // Função para calcular o comprimento da subsequência comum mais longa (LCS)
 int lcs_dp(char *X, char *Y) {
     int m = strlen(X);
     int n = strlen(Y);
-    int L[m+1][n+1];  // Matriz para armazenar os comprimentos das subsequências
+    int L[m+1][n+1];
 
-    // Preenche a matriz L usando programação dinâmica
     for (int i = 0; i <= m; i++) {
         for (int j = 0; j <= n; j++) {
             if (i == 0 || j == 0) {
-                L[i][j] = 0;  // Base de recursão: LCS de uma string vazia é 0
+                L[i][j] = 0;
             } else if (X[i-1] == Y[j-1]) {
-                L[i][j] = L[i-1][j-1] + 1;  // Se os caracteres são iguais, aumenta o comprimento
+                L[i][j] = L[i-1][j-1] + 1;
             } else {
-                L[i][j] = (L[i-1][j] > L[i][j-1]) ? L[i-1][j] : L[i][j-1];  // Caso contrário, pega o máximo
+                L[i][j] = (L[i-1][j] > L[i][j-1]) ? L[i-1][j] : L[i][j-1];
             }
         }
     }
 
-    // O comprimento da LCS estará na célula L[m][n]
     return L[m][n];
 }
 
@@ -32,15 +33,21 @@ void process_file(char *filename) {
         return;
     }
 
-    char X[teste+1], Y[teste+1];  // Supondo que o tamanho das strings seja 100
-    // Lê as duas linhas de entrada
+    char X[teste + 1], Y[teste + 1];
+
     if (fgets(X, sizeof(X), file) && fgets(Y, sizeof(Y), file)) {
-        // Remover o caractere de nova linha que pode ser lido pelo fgets
         X[strcspn(X, "\n")] = 0;
         Y[strcspn(Y, "\n")] = 0;
 
-        // Chama a função LCS para calcular o comprimento da LCS
-        printf("Comprimento da LCS: %d\n", lcs_dp(X, Y));
+        clock_t start_time = clock();  // Início da medição de tempo
+
+        int result = lcs_dp(X, Y);
+
+        clock_t end_time = clock();  // Fim da medição de tempo
+        double execution_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+        printf("Comprimento da LCS: %d\n", result);
+        printf("Tempo de execução: %.6f segundos\n", execution_time);
     } else {
         printf("Erro ao ler as strings do arquivo.\n");
     }
@@ -49,8 +56,8 @@ void process_file(char *filename) {
 }
 
 int main() {
-    char filename[] = "entrada.txt";  // Substitua pelo nome do arquivo de entrada
-    teste = 25;
+    char filename[] = "entrada.txt";
+    teste = 1000;  // Definir o tamanho máximo das strings
     process_file(filename);
     return 0;
 }
